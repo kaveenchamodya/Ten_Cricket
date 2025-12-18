@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Quality Web Player | Kaveen Chamodya</title>
+    
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+    <link href="https://unpkg.com/@videojs/themes@1.0.1/city/index.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #00f2fe;
+            --secondary-color: #4facfe;
+            --bg-dark: #080a0f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Loading Screen (Initializing) --- */
+        #loader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 60px; height: 60px;
+            border: 5px solid rgba(0, 242, 254, 0.1);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .loading-text {
+            margin-top: 20px;
+            letter-spacing: 3px;
+            font-size: 1rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* --- Glassmorphism Player Container --- */
+        .container {
+            width: 95%;
+            max-width: 950px;
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            display: none; 
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- Video Player Styling --- */
+        .video-js {
+            width: 100%;
+            height: 520px;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        /* Big Play Button Customization */
+        .vjs-big-play-button {
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color)) !important;
+            border: none !important;
+            width: 80px !important;
+            height: 80px !important;
+            line-height: 80px !important;
+            border-radius: 50% !important;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5) !important;
+        }
+
+        /* --- Footer Section --- */
+        .footer-note {
+            margin-top: 25px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+            text-align: center;
+            letter-spacing: 1px;
+            line-height: 1.6;
+        }
+
+        .dev-name {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        .dev-name span {
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <div class="loading-text" id="status-text">Initializing Web Player...</div>
+    </div>
+
+    <div class="container" id="player-ui">
+        
+        <video id="my-video" class="video-js vjs-theme-city vjs-big-play-centered" controls preload="auto">
+            <p class="vjs-no-js">To view this video please enable JavaScript.</p>
+        </video>
+
+        <footer class="footer-note">
+            <p>&copy; 2025 All Rights Reserved</p>
+            <p class="dev-name">Powered By <span>Kaveen Chamodya</span></p>
+        </footer>
+    </div>
+
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    
+    <script>
+        // සැඟවුණු ලින්ක් එක
+        const streamUrl = "https://allottplay.com/tv/toffee/live.php?id=ten_cricket&e=.m3u8";
+
+        window.onload = function() {
+            // High Quality සෙටින්ග්ස් සහිතව ප්ලේයර් එක සක්‍රිය කිරීම
+            var player = videojs('my-video', {
+                html5: {
+                    vhs: {
+                        overrideNative: true,
+                        enableLowInitialPlaylist: false, // මුලින්ම හොඳම කොලිටිය උත්සාහ කරන්න
+                        fastQualityChange: true
+                    }
+                },
+                responsive: true,
+                fluid: true,
+                playbackRates: [1]
+            });
+
+            player.src({
+                src: streamUrl,
+                type: 'application/x-mpegURL'
+            });
+
+            // Loader පාලනය කිරීම
+            setTimeout(() => {
+                document.getElementById('status-text').innerText = "HD Engine Ready!";
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('player-ui').style.display = 'block';
+                    
+                    // වීඩියෝව ස්වයංක්‍රීයව ප්ලේ කිරීමට උත්සාහ කිරීම
+                    player.play().catch(function(e) {
+                        console.log("Auto-play blocked.");
+                    });
+                }, 800);
+            }, 3000);
+        };
+    </script>
+</body>
+</html>
